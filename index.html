@@ -327,7 +327,7 @@
       <div class="winner-row">
         <span class="winner-badge tie" id="winner-badge">本数を入力してください</span>
       </div>
-      <p class="odds-note" id="odds-note"></p>
+      <p class="odds-note" id="bonus-note"></p>
     </div>
 
     <div class="section">
@@ -434,19 +434,17 @@
         if (diff > 0) {
           wb.textContent = 'オリジナルがリード  +' + diff.toLocaleString() + '本';
           wb.className = 'winner-badge original';
-          const odds = zero > 0 ? (1 + Math.round((diff / zero) * 10) / 10).toFixed(1) : '—';
-          document.getElementById('odds-note').textContent =
-            'ゼロ購入者へのオッズボーナス参考倍率：×' + odds;
+          document.getElementById('bonus-note').textContent =
+            'このまま終了 → オリジナル購入者に +10pt / 本（後日付与）';
         } else if (diff < 0) {
           wb.textContent = 'ゼロがリード  +' + Math.abs(diff).toLocaleString() + '本';
           wb.className = 'winner-badge zero';
-          const odds = orig > 0 ? (1 + Math.round((Math.abs(diff) / orig) * 10) / 10).toFixed(1) : '—';
-          document.getElementById('odds-note').textContent =
-            'オリジナル購入者へのオッズボーナス参考倍率：×' + odds;
+          document.getElementById('bonus-note').textContent =
+            'このまま終了 → ゼロ購入者に +20pt / 本（後日付与）';
         } else {
           wb.textContent = '同数 — 引き分け';
           wb.className = 'winner-badge tie';
-          document.getElementById('odds-note').textContent = '';
+          document.getElementById('bonus-note').textContent = '';
         }
       } else {
         document.getElementById('pct-orig').textContent = '—';
@@ -454,7 +452,7 @@
         document.getElementById('tug-bar').style.width = '50%';
         document.getElementById('winner-badge').textContent = '本数を入力してください';
         document.getElementById('winner-badge').className = 'winner-badge tie';
-        document.getElementById('odds-note').textContent = '';
+        document.getElementById('bonus-note').textContent = '';
       }
 
       chart.data.datasets[0].data = [orig, zero];
