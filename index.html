@@ -253,6 +253,14 @@
     .update-btn:hover { background: var(--red-dark); }
     .update-btn:active { transform: scale(0.97); }
 
+    .qr-url-row { display: flex; gap: 10px; align-items: center; }
+    .qr-url-row input { flex: 1; border: 0.5px solid var(--border-strong); border-radius: var(--radius-md); padding: 10px 12px; font-size: 13px; background: var(--bg-secondary); color: var(--text-primary); outline: none; }
+    .qr-url-row input:focus { border-color: var(--red); }
+    .qr-download-btn { margin-top: 12px; background: transparent; border: 0.5px solid var(--border-strong); border-radius: var(--radius-md); padding: 8px 20px; font-size: 13px; color: var(--text-secondary); cursor: pointer; }
+    .qr-download-btn:hover { background: var(--bg-secondary); }
+
+    .admin-badge { display: inline-block; font-size: 11px; font-weight: 500; letter-spacing: 0.06em; background: #FCEBEB; color: #A32D2D; padding: 3px 10px; border-radius: var(--radius-md); margin-bottom: 12px; }
+
     /* Legend */
     .legend {
       display: flex;
@@ -341,18 +349,34 @@
       </div>
     </div>
 
-    <div class="section">
-      <p class="input-title">本数を入力して更新</p>
-      <div class="input-row">
-        <div class="input-group orig">
-          <label>コカ・コーラ（本）</label>
-          <input type="number" id="in-orig" placeholder="例：12000" min="0">
+    <div id="admin-panel" style="display:none;">
+      <div class="section">
+        <div class="admin-badge">管理者モード</div>
+        <p class="input-title">本数を入力して更新</p>
+        <div class="input-row">
+          <div class="input-group orig">
+            <label>コカ・コーラ（本）</label>
+            <input type="number" id="in-orig" placeholder="例：12000" min="0">
+          </div>
+          <div class="input-group zero">
+            <label>コカ・コーラ ゼロ（本）</label>
+            <input type="number" id="in-zero" placeholder="例：9500" min="0">
+          </div>
+          <button class="update-btn" onclick="updateBattle()">更新</button>
         </div>
-        <div class="input-group zero">
-          <label>コカ・コーラ ゼロ（本）</label>
-          <input type="number" id="in-zero" placeholder="例：9500" min="0">
+      </div>
+
+      <div class="section">
+        <p class="section-title">QRコード</p>
+        <div class="qr-url-row">
+          <input type="text" id="qr-url-input" placeholder="https://ユーザー名.github.io/cola-battle/">
+          <button class="update-btn" onclick="generateQR()">生成</button>
         </div>
-        <button class="update-btn" onclick="updateBattle()">更新</button>
+        <div id="qr-area" style="display:none; margin-top:1.25rem; text-align:center;">
+          <div id="qr-output" style="display:inline-block; padding:16px; background:#fff; border-radius:12px; border:0.5px solid var(--border);"></div>
+          <p style="font-size:12px; color:var(--text-tertiary); margin-top:10px; word-break:break-all;" id="qr-url-display"></p>
+          <button class="qr-download-btn" onclick="downloadQR()">PNG でダウンロード</button>
+        </div>
       </div>
     </div>
 
@@ -464,6 +488,46 @@
     document.getElementById('in-zero').addEventListener('keydown', e => e.key === 'Enter' && updateBattle());
 
     initChart();
+
+    if (new URLSearchParams(window.location.search).has('admin')) {
+      document.getElementById('admin-panel').style.display = 'block';
+    }
+  </script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <script>
+    let qrInstance = null;
+
+    function generateQR() {
+      const url = document.getElementById('qr-url-input').value.trim();
+      if (!url) { alert('URLを入力してください'); return; }
+
+      const area = document.getElementById('qr-area');
+      const output = document.getElementById('qr-output');
+      output.innerHTML = '';
+      qrInstance = null;
+
+      qrInstance = new QRCode(output, {
+        text: url,
+        width: 200,
+        height: 200,
+        colorDark: '#1a1a18',
+        colorLight: '#ffffff',
+        correctLevel: QRCode.CorrectLevel.H
+      });
+
+      document.getElementById('qr-url-display').textContent = url;
+      area.style.display = 'block';
+    }
+
+    function downloadQR() {
+      const canvas = document.querySelector('#qr-output canvas');
+      if (!canvas) { alert('先にQRコードを生成してください'); return; }
+      const link = document.createElement('a');
+      link.download = 'cola-battle-qr.png';
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+    }
   </script>
 </body>
 </html>
