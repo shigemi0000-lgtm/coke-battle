@@ -385,7 +385,9 @@
       hideBonusCard();
     }
     chart.data.datasets[0].data = [orig, zero];
-    chart.options.scales.y.max = Math.ceil(Math.max(orig, zero, 1) * 1.2);
+    const rawMax = Math.max(orig, zero, 1) * 1.25;
+    const magnitude = Math.pow(10, Math.floor(Math.log10(rawMax)));
+    chart.options.scales.y.max = Math.ceil(rawMax / magnitude) * magnitude;
     chart.update();
   }
 
