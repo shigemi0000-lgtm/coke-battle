@@ -125,12 +125,53 @@
     .modal-btns { display: flex; gap: 8px; }
     .modal-btns .btn-red, .modal-btns .btn-ghost { flex: 1; padding: 10px; }
 
-    @media (max-width: 400px) {
-      .score-card-number { font-size: 22px; }
-      .countdown-num { font-size: 30px; min-width: 54px; padding: 8px 10px; }
-      .input-row { grid-template-columns: 1fr 1fr; }
-      .btn-red.submit-btn { grid-column: 1 / -1; width: 100%; }
-    }
+    /* Vote tally section */
+    .tally-section { background: var(--bg-card); border-radius: var(--radius-xl); border: 0.5px solid var(--border); padding: 1.25rem 1.5rem; margin-bottom: 1rem; }
+    .tally-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
+    .tally-title { font-size: 10px; color: var(--text-tertiary); letter-spacing: 0.1em; text-transform: uppercase; }
+    .tally-total { font-size: 11px; color: var(--text-tertiary); }
+    .tally-row { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+    .tally-row:last-child { margin-bottom: 0; }
+    .tally-label { font-size: 11px; color: var(--text-secondary); width: 110px; flex-shrink: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .tally-bar-wrap { flex: 1; height: 18px; background: rgba(255,255,255,0.05); border-radius: 9px; overflow: hidden; }
+    .tally-bar { height: 100%; border-radius: 9px; transition: width 0.7s cubic-bezier(0.4,0,0.2,1); min-width: 0%; }
+    .tally-bar.orig { background: var(--red); }
+    .tally-bar.zero { background: #5a5a57; }
+    .tally-bar.zcaf { background: #2a4a2a; border: 0.5px solid rgba(144,238,144,0.25); }
+    .tally-count { font-size: 11px; color: var(--text-secondary); width: 52px; text-align: right; flex-shrink: 0; }
+    .tally-pct { font-size: 11px; font-weight: 600; width: 34px; text-align: right; flex-shrink: 0; }
+    .tally-pct.orig { color: #f08080; }
+    .tally-pct.zero { color: var(--text-secondary); }
+    .tally-pct.zcaf { color: #90EE90; }
+    .tally-refresh { font-size: 10px; color: var(--text-tertiary); text-align: right; margin-top: 10px; }
+
+    /* Vote popup – update skip/remaining text */
+    .vote-remaining { font-size: 12px; color: #f08080; font-weight: 600; margin-bottom: 4px; }
+
+    /* Vote popup */
+    .vote-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 2000; align-items: center; justify-content: center; padding: 1rem; }
+    .vote-overlay.on { display: flex; }
+    .vote-modal { background: var(--bg-card); border-radius: var(--radius-xl); padding: 1.75rem 1.5rem 2rem; width: min(380px, 95vw); border: 0.5px solid var(--border-mid); text-align: center; }
+    .vote-eyebrow { font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--text-tertiary); margin-bottom: 10px; }
+    .vote-title { font-size: 19px; font-weight: 700; color: var(--text-primary); line-height: 1.4; margin-bottom: 6px; }
+    .vote-title em { color: var(--red); font-style: normal; }
+    .vote-sub { font-size: 12px; color: var(--text-secondary); margin-bottom: 1.5rem; }
+    .vote-choices { display: flex; flex-direction: column; gap: 10px; margin-bottom: 1.25rem; }
+    .vote-btn { width: 100%; border: none; border-radius: var(--radius-md); padding: 14px 16px; font-size: 15px; font-weight: 600; cursor: pointer; transition: transform 0.12s, opacity 0.12s; display: flex; align-items: center; gap: 12px; }
+    .vote-btn:active { transform: scale(0.97); }
+    .vote-btn.orig { background: var(--red); color: white; }
+    .vote-btn.zero { background: #2C2C2A; color: white; border: 0.5px solid rgba(255,255,255,0.15); }
+    .vote-btn.zero-caf { background: #1a2a1a; color: #90EE90; border: 0.5px solid rgba(144,238,144,0.3); }
+    .vote-btn-icon { width: 36px; height: 36px; border-radius: 6px; background: rgba(255,255,255,0.15); flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 18px; }
+    .vote-btn-text { text-align: left; }
+    .vote-btn-name { font-size: 14px; font-weight: 700; display: block; }
+    .vote-btn-desc { font-size: 10px; opacity: 0.75; display: block; margin-top: 2px; font-weight: 400; }
+    .vote-skip { font-size: 11px; color: var(--text-tertiary); background: none; border: none; cursor: pointer; padding: 4px 8px; text-decoration: underline; opacity: 0.6; }
+    .vote-skip:hover { opacity: 1; }
+    .vote-badge { display: none; font-size: 11px; font-weight: 600; padding: 3px 12px; border-radius: 20px; margin: 6px auto 0; width: fit-content; }
+    .vote-badge.orig { background: rgba(216,32,32,0.18); color: #f08080; border: 0.5px solid rgba(216,32,32,0.3); }
+    .vote-badge.zero { background: rgba(255,255,255,0.07); color: var(--text-secondary); border: 0.5px solid rgba(255,255,255,0.15); }
+    .vote-badge.zero-caf { background: rgba(144,238,144,0.1); color: #90EE90; border: 0.5px solid rgba(144,238,144,0.25); }
   </style>
 </head>
 <body>
@@ -140,6 +181,7 @@
     <p class="header-eyebrow">Kusuri no Aoki &times; Coca-Cola Campaign</p>
     <h1 class="header-title"><em>コカ・コーラ</em> vs コカ・コーラ ゼロ<br>販売本数 リアルタイム対決</h1>
     <p class="header-updated" id="last-updated">—</p>
+    <div class="vote-badge" id="vote-badge"></div>
   </div>
 
   <div class="score-grid">
@@ -164,6 +206,33 @@
         <p class="score-card-pct" id="pct-zero">—</p>
       </div>
     </div>
+  </div>
+
+  <!-- 投票集計 -->
+  <div class="tally-section">
+    <div class="tally-header">
+      <span class="tally-title">みんなの投票（どれ派？）</span>
+      <span class="tally-total" id="tally-total">集計中...</span>
+    </div>
+    <div class="tally-row">
+      <span class="tally-label">🔴 オリジナル</span>
+      <div class="tally-bar-wrap"><div class="tally-bar orig" id="tbar-orig" style="width:0%"></div></div>
+      <span class="tally-count" id="tcount-orig">—</span>
+      <span class="tally-pct orig" id="tpct-orig">—</span>
+    </div>
+    <div class="tally-row">
+      <span class="tally-label">⚫ ゼロ</span>
+      <div class="tally-bar-wrap"><div class="tally-bar zero" id="tbar-zero" style="width:0%"></div></div>
+      <span class="tally-count" id="tcount-zero">—</span>
+      <span class="tally-pct zero" id="tpct-zero">—</span>
+    </div>
+    <div class="tally-row">
+      <span class="tally-label">🟢 ゼロカフェイン</span>
+      <div class="tally-bar-wrap"><div class="tally-bar zcaf" id="tbar-zcaf" style="width:0%"></div></div>
+      <span class="tally-count" id="tcount-zcaf">—</span>
+      <span class="tally-pct zcaf" id="tpct-zcaf">—</span>
+    </div>
+    <p class="tally-refresh" id="tally-refreshed"></p>
   </div>
 
   <div class="section">
@@ -419,6 +488,97 @@
     const a = document.createElement('a'); a.download = 'cola-battle-qr.png'; a.href = c.toDataURL('image/png'); a.click();
   }
 
+  /* ===== 投票・集計 ===== */
+  // countapi.xyz を使ってデバイス間でリアルタイム集計
+  // namespace は一意に。変更する場合はここだけ修正。
+  const NS = 'cola-aoki-battle-2026';
+  const VOTE_COUNT_KEY = 'cola_vote_count';   // 残り回数
+  const VOTE_LAST_KEY  = 'cola_vote_last';    // 最後に選んだ選択肢
+  const MAX_VOTES = 3;
+
+  const VOTE_LABELS = {
+    'orig':     { text: 'オリジナル派 🔴', cls: 'orig' },
+    'zero':     { text: 'ゼロ派 ⚫',       cls: 'zero' },
+    'zero-caf': { text: 'ゼロカフェイン派 🟢', cls: 'zero-caf' },
+  };
+
+  async function hitCounter(key) {
+    try {
+      const r = await fetch(`https://api.countapi.xyz/hit/${NS}/${key}`);
+      const d = await r.json();
+      return d.value || 0;
+    } catch { return null; }
+  }
+
+  async function getCounter(key) {
+    try {
+      const r = await fetch(`https://api.countapi.xyz/get/${NS}/${key}`);
+      const d = await r.json();
+      return d.value || 0;
+    } catch { return null; }
+  }
+
+  async function fetchTally() {
+    const [orig, zero, zcaf] = await Promise.all([
+      getCounter('v-orig'),
+      getCounter('v-zero'),
+      getCounter('v-zcaf'),
+    ]);
+    renderTally(orig, zero, zcaf);
+  }
+
+  function renderTally(orig, zero, zcaf) {
+    if (orig === null && zero === null && zcaf === null) return;
+    const o = orig || 0, z = zero || 0, c = zcaf || 0;
+    const total = o + z + c;
+    document.getElementById('tally-total').textContent = total > 0 ? `合計 ${total.toLocaleString()} 票` : '投票受付中';
+    const pct = (n) => total > 0 ? Math.round(n / total * 100) : 0;
+    const po = pct(o), pz = pct(z), pc = pct(c);
+    [['orig', o, po], ['zero', z, pz], ['zcaf', c, pc]].forEach(([k, n, p]) => {
+      document.getElementById(`tbar-${k}`).style.width = p + '%';
+      document.getElementById(`tcount-${k}`).textContent = n.toLocaleString() + '票';
+      document.getElementById(`tpct-${k}`).textContent = total > 0 ? p + '%' : '—';
+    });
+    const now = new Date();
+    document.getElementById('tally-refreshed').textContent =
+      now.toLocaleTimeString('ja-JP', { hour: '2-digit', minute: '2-digit' }) + ' 更新';
+  }
+
+  async function castVote(choice) {
+    const count = parseInt(localStorage.getItem(VOTE_COUNT_KEY) || '0');
+    if (choice) {
+      const keyMap = { 'orig': 'v-orig', 'zero': 'v-zero', 'zero-caf': 'v-zcaf' };
+      await hitCounter(keyMap[choice]);
+      const newCount = count + 1;
+      localStorage.setItem(VOTE_COUNT_KEY, newCount);
+      localStorage.setItem(VOTE_LAST_KEY, choice);
+      showVoteBadge(choice);
+      fetchTally();
+    }
+    document.getElementById('vote-overlay').classList.remove('on');
+  }
+
+  function showVoteBadge(choice) {
+    const info = VOTE_LABELS[choice];
+    if (!info) return;
+    const badge = document.getElementById('vote-badge');
+    badge.textContent = info.text;
+    badge.className = 'vote-badge ' + info.cls;
+    badge.style.display = 'block';
+  }
+
+  function maybeShowVotePopup() {
+    const count = parseInt(localStorage.getItem(VOTE_COUNT_KEY) || '0');
+    const last  = localStorage.getItem(VOTE_LAST_KEY);
+    if (last) showVoteBadge(last);
+    if (count < MAX_VOTES) {
+      const remaining = MAX_VOTES - count;
+      document.getElementById('vote-remaining').textContent =
+        `あと ${remaining} 回投票できます`;
+      setTimeout(() => document.getElementById('vote-overlay').classList.add('on'), 400);
+    }
+  }
+
   document.addEventListener('DOMContentLoaded', () => {
     initChart();
     if (sessionStorage.getItem('admin') === '1') showAdmin();
@@ -430,6 +590,9 @@
     }
     updateCountdown();
     setInterval(updateCountdown, 30000);
+    fetchTally();
+    setInterval(fetchTally, 30000);
+    maybeShowVotePopup();
     document.getElementById('pw-input').addEventListener('keydown', e => e.key === 'Enter' && checkPw());
     document.getElementById('overlay').addEventListener('click', e => { if (e.target === document.getElementById('overlay')) closeModal(); });
     const io = document.getElementById('in-orig'), iz = document.getElementById('in-zero');
@@ -437,5 +600,38 @@
     if (iz) iz.addEventListener('keydown', e => e.key === 'Enter' && updateBattle());
   });
 </script>
+<!-- 投票ポップアップ（3回まで） -->
+<div class="vote-overlay" id="vote-overlay">
+  <div class="vote-modal">
+    <p class="vote-eyebrow">Kusuri no Aoki × Coca-Cola Campaign</p>
+    <p class="vote-title">あなたはどれ派？<br><em>好きな商品を選んでね</em></p>
+    <p class="vote-remaining" id="vote-remaining"></p>
+    <p class="vote-sub">選ぶと戦況が見られます。1回のご来店につき最大3回まで投票できます。</p>
+    <div class="vote-choices">
+      <button class="vote-btn orig" onclick="castVote('orig')">
+        <div class="vote-btn-icon">🔴</div>
+        <div class="vote-btn-text">
+          <span class="vote-btn-name">コカ・コーラ</span>
+          <span class="vote-btn-desc">ORIGINAL TASTE</span>
+        </div>
+      </button>
+      <button class="vote-btn zero" onclick="castVote('zero')">
+        <div class="vote-btn-icon">⚫</div>
+        <div class="vote-btn-text">
+          <span class="vote-btn-name">コカ・コーラ ゼロ</span>
+          <span class="vote-btn-desc">ZERO SUGAR · NO CALORIES</span>
+        </div>
+      </button>
+      <button class="vote-btn zero-caf" onclick="castVote('zero-caf')">
+        <div class="vote-btn-icon">🟢</div>
+        <div class="vote-btn-text">
+          <span class="vote-btn-name">コカ・コーラ ゼロカフェイン</span>
+          <span class="vote-btn-desc">ZERO SUGAR · ZERO CAFFEINE</span>
+        </div>
+      </button>
+    </div>
+    <button class="vote-skip" onclick="castVote(null)">スキップして戦況を見る</button>
+  </div>
+</div>
 </body>
 </html>
